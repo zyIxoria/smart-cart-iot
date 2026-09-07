@@ -50,6 +50,8 @@ out/
 postgres_data/
 mosquitto_data/
 mosquitto_log/
+mosquitto/data/
+mosquitto/log/
 
 # IDE & Editors
 .vscode/

@@ -1,2 +1,34 @@
-# Smart Cart IoT - Docker Compose
-# Services will be defined in subsequent tasks.
+services:
+  postgres:
+    image: postgres:16
+    container_name: smartcart-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-smart_cart}
+      POSTGRES_USER: ${POSTGRES_USER:-smartcart}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-smartcart_password}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-smartcart} -d ${POSTGRES_DB:-smart_cart}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: smartcart-mosquitto
+    restart: unless-stopped
+    ports:
+      - "${MQTT_PORT:-1883}:1883"
+    volumes:
+      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+
+volumes:
+  postgres_data:
+  mosquitto_data:
+  mosquitto_log:
